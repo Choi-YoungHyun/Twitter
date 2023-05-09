@@ -45,7 +45,7 @@ export async function login(req, res){
     }
     
     const token = createJwtToken(user.id);
-    res.status(200).json({token, username});
+    res.status(200).json({token, username});    
 }
     // req.body로 data를 받아서 해당 id로 로그인 여부를 판단하는 함수.
     // 해당 id가 존재하지 않으면, '401'을 return.
