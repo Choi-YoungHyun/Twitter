@@ -1,10 +1,11 @@
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt'
 import * as userRepository from '../data/auth.js';
+import {config} from '../config.js'
 
-const jwtSecretKey = '1234'; // 임의의 32bit 키를 가져옴.
-const jwtExpiresInDays = '2d' // 이틀동안 사용이 가능.
-const bcryptSaltRounds = 10;  // 10번 반복해서 돌림.
+const jwtSecretKey = config.jwt.secretKey; // 임의의 32bit 키를 가져옴.
+const jwtExpiresInDays = config.jwt.expiresInSec // 이틀동안 사용이 가능.
+const bcryptSaltRounds = config.bcrypt.saltRounds;  // 10번 반복해서 돌림.
 
 export async function signup(req, res){
     const { username, password, name, email, url } = req.body;

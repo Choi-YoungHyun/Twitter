@@ -1,5 +1,6 @@
 import jwt from 'jsonwebtoken';
 import * as userRepository from '../data/auth.js';
+import {config} from '../config.js'
 
 const AUTH_ERROR = { message: '인증에러' };
 
@@ -10,7 +11,7 @@ export const isAuth = async (req, res, next) => { // 인증의 여부를 알려�
         const token = authHeader.split(' ')[1]; // token값을 한칸 띄운 split값의 첫번째자리를 가져옴.
         jwt.verify(
             token,
-            '1234', // server>controller>auth.js에서의 secretkey를 가져옴.
+            config.jwt.secretKey, // server>controller>auth.js에서의 secretkey를 가져옴.
             async (error, decoded) => {
                 if (error) {
                     return res.status(402).json(AUTH_ERROR);
