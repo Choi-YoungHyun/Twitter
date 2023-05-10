@@ -1,23 +1,15 @@
-let users =[
-    {
-    id: '1',
-    username: 'melon',
-    password: '$2b$10$697D3aph6EIGKXx5fQtqwupoV8nn5Fen7qk9bw.KixWwBMYeBm7Tq',
-    name: '이메론',
-    email: 'melon@melon.com',
-    url: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS87Gr4eFO7Pt2pE8oym4dxXnxGZYL2Pl_N5A&usqp=CAU'
-    }];
+import { db } from '../db/database.js'
 
     export async function findByUsername(username){
-        return users.find((user)=>user.username === username);
-    } // username을 전달받아 user의 username과 일치할 시 반환.
-
+        return db.execute('select * from users where username=?',[username]).then((result)=>result[0][0]);
+    }
     export async function createUser(user){
-        const created = {...user, id:Date.now().toString()};
-        users.push(created);
-        return created.id;
+        const {username,password,name,email,url} = user
+        return db.execute('insert into users (username,password,name,email,url) values (?, ?, ?, ?, ?)',[username,password,name,email,url]).then((result)=>result[0].insertId)
+
+        //db가 promise 객체이기때문에 then,catch 가능 
     }
 
     export async function findById(id){
-        return users.find((user)=>user.id === id);
+        return db.execute('select id from users where id=?',[id]).then((result)=>result[0][0]);
     }
