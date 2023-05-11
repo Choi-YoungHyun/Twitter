@@ -5,7 +5,7 @@ import tweetsRouter from "./router/tweets.js";
 import authRouter from "./router/auth.js";
 import { config } from './config.js';
 import { initSocket } from './connection/socket.js'
-import { db } from './db/database.js'
+import { sequelize } from './db/database.js'
 
 const app = express();
 app.use(express.json());
@@ -24,8 +24,13 @@ app.use((error, req, res, next) => {
     res.sendStatus(500);
 });
 
-db.getConnection().then('연결완료')
 
-export const server = app.listen(config.host.port); //웹으로도 사용
+// db.getConnection().then('연결완료')
 
-initSocket(server);
+sequelize.sync().then((client)=>{
+    //console.log(client)
+    const server = app.listen(config.host.port);
+    initSocket(server);
+})
+
+

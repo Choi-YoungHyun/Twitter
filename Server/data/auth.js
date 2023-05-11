@@ -1,15 +1,53 @@
-import { db } from '../db/database.js'
+import SQ, { DATE } from 'sequelize'
+import { sequelize } from '../db/database.js';
+
+const DateTypes = SQ.DataTypes;
+
+//users 테이블 만들기
+export const User = sequelize.define(
+    'user',
+    {
+        id:{
+            type:DateTypes.INTEGER,
+            autoIncrement:true,
+            allowNull:false,
+            primaryKey:true
+        },
+        username:{
+            type:DateTypes.STRING(45),
+            allowNull: false,
+        },
+        password:{
+            type:DateTypes.STRING(128),
+            allowNull:false
+        },
+        name:{
+            type:DateTypes.STRING(45),
+            allowNull:false
+        },
+        email:{
+            type:DateTypes.STRING(128),
+            allowNull:false
+        },
+        url:{
+            type:DateTypes.TEXT
+        },
+        regdate:{
+            type:DateTypes.DATE,
+            defaultValue:DateTypes.NOW
+        }
+    },
+    {timestamps: false}
+)
 
     export async function findByUsername(username){
-        return db.execute('select * from users where username=?',[username]).then((result)=>result[0][0]);
+        return User.findOne({where:{username}})
     }
-    export async function createUser(user){
-        const {username,password,name,email,url} = user
-        return db.execute('insert into users (username,password,name,email,url) values (?, ?, ?, ?, ?)',[username,password,name,email,url]).then((result)=>result[0].insertId)
 
-        //db가 promise 객체이기때문에 then,catch 가능 
+    export async function createUser(user){
+        return User.create(user).then((data)=>data.dataValues.id)
     }
 
     export async function findById(id){
-        return db.execute('select id from users where id=?',[id]).then((result)=>result[0][0]);
+        return User.findByPk(id);
     }

@@ -38,19 +38,14 @@ export async function login(req, res){
         return res.status(401).json({message:'아이디/비밀번호 확인좀.'});
     }
 
-    const isValidpassword = await bcrypt.compare(password, user.password) // 비밀번호가 일치하는지를 compare 메서드로 비교하여 확인.
+    const isValidpassword = await bcrypt.compare(password, user.password) 
 
     if(!isValidpassword){ // false인 경우, 401 error.
         return res.status(401).json({message:'아이디/비밀번호 확인좀.'});
     }
     
-    const token = createJwtToken(user.id);
-    res.status(200).json({token, username});    
+    const token = createJwtToken(user.id);   
 }
-    // req.body로 data를 받아서 해당 id로 로그인 여부를 판단하는 함수.
-    // 해당 id가 존재하지 않으면, '401'을 return.
-    // bcrypt를 이용하여 비밀번호까지 모두 맞다면, 해당 정보를 JWT를 이용하여 사용자에게 json으로 전달.
-
 
 export async function me(req, res, next){
     const user = await userRepository.findById(req.userId);
