@@ -44,7 +44,8 @@ export async function login(req, res){
         return res.status(401).json({message:'아이디/비밀번호 확인좀.'});
     }
     
-    const token = createJwtToken(user.id);   
+    const token = createJwtToken(user.id);
+    res.status(200).json({token, username})   
 }
 
 export async function me(req, res, next){

@@ -1,53 +1,28 @@
-import SQ, { DATE } from 'sequelize'
-import { sequelize } from '../db/database.js';
+import { getUsers } from '../db/database.js';
+import MongoDb from 'mongodb'
 
-const DateTypes = SQ.DataTypes;
 
-//users 테이블 만들기
-export const User = sequelize.define(
-    'user',
-    {
-        id:{
-            type:DateTypes.INTEGER,
-            autoIncrement:true,
-            allowNull:false,
-            primaryKey:true
-        },
-        username:{
-            type:DateTypes.STRING(45),
-            allowNull: false,
-        },
-        password:{
-            type:DateTypes.STRING(128),
-            allowNull:false
-        },
-        name:{
-            type:DateTypes.STRING(45),
-            allowNull:false
-        },
-        email:{
-            type:DateTypes.STRING(128),
-            allowNull:false
-        },
-        url:{
-            type:DateTypes.TEXT
-        },
-        regdate:{
-            type:DateTypes.DATE,
-            defaultValue:DateTypes.NOW
-        }
-    },
-    {timestamps: false}
-)
+//objectID는 primary key + auto_increment와 같은 것이 자동으로 들어감
+const ObjectID = MongoDb.ObjectId;
 
     export async function findByUsername(username){
-        return User.findOne({where:{username}})
+        return getUsers().find({username})
+        .next()
+        .then(mapOptionalUser)
     }
 
     export async function createUser(user){
-        return User.create(user).then((data)=>data.dataValues.id)
+        return getUsers().insertOne(user)
+        .then((result)=>{
+            console.log(result)})
     }
 
     export async function findById(id){
-        return User.findByPk(id);
+        return getUsers().find({_id:new ObjectID(id)})
+        .next()
+        .then(mapOptionalUser)
+    }
+
+    function mapOptionalUser(user){
+        return user ? {...user,id:user._id.toString()} : user
     }

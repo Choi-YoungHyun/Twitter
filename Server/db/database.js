@@ -1,14 +1,17 @@
 import { config } from '../config.js'
-import SQ from 'sequelize'
+import MongoDb from 'mongodb'
 
-const {host ,user, password, database } = config.db
+let db;
 
-export const sequelize = new SQ.Sequelize(database,user,password,{
-    host,
-    dialect:'mysql',
-    logging:false,
-    timezone:"Asia/Tokyo"
-})
+export async function connectDB(){
+    return MongoDb.MongoClient.connect(config.db.host)
+    .then((client)=> {db = client.db()})
+}
 
-//logging : 로그기록을 남길지 여부
-//dialect : DB종류
+export function getUsers(){
+    return db.collection('users')
+}
+
+export function getTweets(){
+    return db.collection('tweets')
+}

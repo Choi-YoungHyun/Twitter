@@ -10,7 +10,7 @@ export const isAuth = async (req, res, next) => { // 인증의 여부를 알려�
         return res.status(401).json(AUTH_ERROR);}
         const token = authHeader.split(' ')[1]; // token값을 한칸 띄운 split값의 첫번째자리를 가져옴.
         jwt.verify(
-            token,
+            token,  
             config.jwt.secretKey, // server>controller>auth.js에서의 secretkey를 가져옴.
             async (error, decoded) => {
                 if (error) {
