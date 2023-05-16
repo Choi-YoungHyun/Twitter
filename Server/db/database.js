@@ -1,12 +1,18 @@
 import { config } from '../config.js'
-import MongoDb from 'mongodb'
-
-let db;
+import Mongoose, { Schema } from 'mongoose';
 
 export async function connectDB(){
-    return MongoDb.MongoClient.connect(config.db.host)
-    .then((client)=> {db = client.db()})
+    return Mongoose.connect(config.db.host)
 }
+
+export function userVirtualId(schema){
+    schema.virtual('id')        
+    .get(function(){return this._id.toString()});
+    schema.set('toJSON',{virtuals:true})
+    schema.set('toObject',{virtuals:true})
+}
+
+ //가상속성
 
 export function getUsers(){
     return db.collection('users')
@@ -15,3 +21,4 @@ export function getUsers(){
 export function getTweets(){
     return db.collection('tweets')
 }
+

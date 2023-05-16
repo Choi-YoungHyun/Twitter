@@ -28,7 +28,7 @@ app.use((error, req, res, next) => {
 
 connectDB()
     .then(()=>{
-        console.log('MongoDB 연결중')
+        console.log('Mongoose 연결중입니다.')
         const server = app.listen(config.host.port);
         initSocket(server);})
     .catch(error=>console.log(error))

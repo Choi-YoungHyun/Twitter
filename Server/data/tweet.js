@@ -1,69 +1,60 @@
-import MongDb from 'mongodb'
-import { getTweet } from '../controller/tweet.js';
-import { getTweets } from '../db/database.js';
+import Mongoose from 'mongoose';
+import { userVirtualId } from '../db/database.js';
 import * as UserRepository from './auth.js';
 
-const ObjectID = MongDb.ObjectId;
-console.log(ObjectID)
+// 생성
+const tweetSchema = new Mongoose.Schema({
+    text:{type:String, required:true},
+    userId:{type:String, required:true},
+    name:{type:String, required:true},
+    username:{type:String, required:true},
+    url: String
+},
+{timestamps:true}
+)
+
+userVirtualId(tweetSchema);
+
+//collection 생성
+const Tweet = Mongoose.model('Tweet',tweetSchema)
 
 
 
 
 export async function getAll() {
-    return getTweets()
+    return Tweet
     .find()
-    .sort({createAt: -1})
-    .toArray()
-    .then(mapTweets)
-    // return getTweets().find().toArray()
+    .sort({createAt:-1})
 }
 
 export async function getAllByUsername(username) {
-    return getTweets()
-    .find({username:username})
-    .sort({createAt: -1})
-    .toArray()
-    .then(mapTweets)
+    return Tweet.find({username}).sort({createAt:-1})
 };
 
 export async function getById(id) {
-    return getTweets()
-    .find({_id:new ObjectID(id)})
-    .next()
-    .then(mapOptionalTweet);
+    return Tweet.findById(id)
 }
 
 export async function create(text, userId) {
     return UserRepository.findById(userId)
-    .then((user)=>getTweets().insertOne({
+    .then((user)=> new Tweet({
         text,
-        createAt: new Date(),
         userId,
         name:user.name,
-        username:user.username,
-        url:user.url
-    }))
-    .then((result)=>console.log(result)).then(mapOptionalTweet)
+        username:user.username
+    })
+    .save()
+    );
 }
 
 export async function update(id,text) {
-    return  getTweets().findOneAndUpdate(
-        {_id:new ObjectID(id)},
-        {$set: {text} },
+    return  Tweet.findByIdAndUpdate(id,{text},
         {returnOriginal: false}
-    ).then((result)=>result.value).then(mapOptionalTweet)
+    )
 }
 
 export async function remove(id) {
-    return getTweets().deleteOne({_id: new ObjectID(id)})
+    return Tweet.findByIdAndDelete(id)
 }
 
 
-function mapOptionalTweet(tweet){
-    return tweet ? {...tweet, id:tweet._id.toString()} : tweet
-}
-
-
-function mapTweets(tweets){
-    return tweets.map(mapOptionalTweet)
-}
